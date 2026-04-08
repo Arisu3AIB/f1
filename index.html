@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarketPulse — Global News Sentiment Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="live-dot"></span>
+      <span class="brand-text">Market<span class="brand-accent">Pulse</span></span>
+      <span class="brand-tagline">Global Sentiment Dashboard</span>
+    </div>
+    <div class="nav-center">
+      <div class="search-bar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search stock, crypto, keyword..." />
+      </div>
+    </div>
+    <div class="nav-right">
+      <span class="clock" id="clock">--:--:-- IST</span>
+      <button class="btn-connect" id="apiBtn">Connect API</button>
+    </div>
+  </nav>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="ticker"></div>
+  </div>
+
+  <!-- MARKET TABS -->
+  <div class="tabs-wrap">
+    <button class="tab active" data-tab="all">All markets</button>
+    <button class="tab" data-tab="us">US stocks</button>
+    <button class="tab" data-tab="in">Indian stocks</button>
+    <button class="tab" data-tab="crypto">Crypto</button>
+  </div>
+
+  <!-- MAIN DASHBOARD -->
+  <div class="dashboard">
+
+    <!-- LEFT -->
+    <main class="left-panel">
+      <div class="metrics-grid" id="metricsGrid"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Sentiment vs price — 7 days</span>
+          <div class="range-group" id="rangeGroup">
+            <button class="rbtn" data-range="1D">1D</button>
+            <button class="rbtn active" data-range="7D">7D</button>
+            <button class="rbtn" data-range="1M">1M</button>
+            <button class="rbtn" data-range="3M">3M</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="mainChart" role="img" aria-label="Line chart showing price index and sentiment score over 7 days">7-day price and sentiment trend.</canvas>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-line solid" style="background:#378ADD"></span>Price index</span>
+          <span class="legend-item"><span class="legend-line dashed"></span>Sentiment score</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px">News sentiment breakdown</div>
+        <div id="sentBars"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Live news feed</span>
+          <span class="news-count" id="newsCount"></span>
+        </div>
+        <div class="news-feed" id="newsFeed"></div>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right-panel">
+      <div class="card text-center">
+        <div class="overall-label">Overall market sentiment</div>
+        <div class="overall-score" id="overallScore">73</div>
+        <canvas id="gaugeChart" width="180" height="100" role="img" aria-label="Gauge showing sentiment 73 out of 100">Sentiment: Bullish (73/100)</canvas>
+        <span class="overall-tag" id="overallTag">Bullish</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">Asset sentiment</div>
+        <div id="assetRows"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">Trending keywords</div>
+        <div class="keyword-cloud" id="keywordCloud"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">Global market pulse</div>
+        <div class="region-grid" id="regionGrid"></div>
+      </div>
+
+      <div class="card" style="background:var(--card-accent-bg);border-color:var(--card-accent-border)">
+        <div class="card-title" style="margin-bottom:6px">Connect real data</div>
+        <p class="helper-text">Plug in NewsAPI, Alpha Vantage, or CoinGecko to power this dashboard with live feeds.</p>
+        <a class="btn-docs" href="https://newsapi.org/docs" target="_blank">View API docs →</a>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>MarketPulse — built with news sentiment analysis</span>
+    <span>Data shown is demo. Connect APIs for live data.</span>
+  </footer>
+
+  <!-- API MODAL -->
+  <div class="modal-overlay" id="apiModal">
+    <div class="modal">
+      <h3>Connect live data APIs</h3>
+      <p>Enter your API keys to power MarketPulse with real-time news and market data. Keys are stored locally in your browser.</p>
+      <div class="api-field">
+        <label>NewsAPI key <a href="https://newsapi.org" target="_blank" style="color:var(--accent-blue);font-weight:400">→ get free key</a></label>
+        <input type="password" id="newsApiKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+      </div>
+      <div class="api-field">
+        <label>Alpha Vantage key <a href="https://alphavantage.co" target="_blank" style="color:var(--accent-blue);font-weight:400">→ get free key</a></label>
+        <input type="password" id="alphaKey" placeholder="XXXXXXXXXXXX" />
+      </div>
+      <p style="font-size:11px;color:var(--text-tertiary);margin-top:4px">CoinGecko (crypto) requires no key — it is free.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancelModal">Cancel</button>
+        <button class="btn-save" id="saveKeys">Save keys</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
