@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MarketPulse — Global News Sentiment Dashboard
 
 A rich, real-time dashboard that gathers world news and shows its **sentiment impact** on stocks, indices, and crypto across US, Indian, and global markets.
@@ -77,3 +78,6 @@ For production use, replace with a proper NLP model or a sentiment API like [VAD
 ---
 
 Built as a first open-source project. PRs and issues welcome!
+=======
+# f1
+>>>>>>> 56672e07e893d76abddc37d35b4447ec8ea7003c
